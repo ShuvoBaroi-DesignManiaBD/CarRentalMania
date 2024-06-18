@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 const newUserValidation = z.object({
-    name: z
+    body: z.object({
+        name: z
       .string({
         invalid_type_error: 'Name must be a string',
       })
@@ -22,7 +23,7 @@ const newUserValidation = z.object({
       .string({
         invalid_type_error: 'Password must be a string',
       })
-      .min(6, { message: 'Password must be at least 6 characters' })
+      .min(8, { message: 'Password must be at least 8 characters' })
       .max(20, { message: 'Password can not be more than 20 characters' }),
   
     phone: z
@@ -36,16 +37,19 @@ const newUserValidation = z.object({
       .string({
         invalid_type_error: 'Address must be a string',
       })
-      .min(1, { message: 'Address is required' }),
+      .min(1, { message: 'Address is required' })
+    })
   });
 
 const userLoginValidation = z.object({
-  pasword: z
+  body: z.object({
+    pasword: z
     .string({
       invalid_type_error: 'Password must be string',
     })
     .max(20, { message: 'Password can not be more than 20 characters' })
     .min(8, { message:'Password can not be less than 8 characters'})
+  })
 });
 
 export const UserValidation = {
