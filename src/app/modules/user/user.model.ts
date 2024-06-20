@@ -1,39 +1,43 @@
 import bcrypt from 'bcrypt';
-import mongoose, { model } from "mongoose";
-import { TUser } from "./user.interface";
+import mongoose, { model } from 'mongoose';
+import { TUser, UserModel } from './user.interface';
 import config from '../../config';
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema<TUser>({
-  name: {
-    type: String,
-    required: true,
+const userSchema = new Schema<TUser, UserModel>(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      select: 0,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
+  {
+    timestamps: true,
   },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: String,
-    required: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-}, {
-  timestamps: true,
-});
+);
 
 // hashing password and save into DB by pre-hook middleware
 userSchema.pre('save', async function (next) {
@@ -54,5 +58,15 @@ userSchema.post('save', function (doc, next) {
   next();
 });
 
-export const User = model<TUser>('User', userSchema);
+userSchema.statics.isUserExistsByEmail = async function (email: string) {
+  return await User.findOne({ email }).select('+password');
+};
 
+userSchema.statics.isPasswordMatched = async function (
+  originalPassword,
+  hashedPassword,
+) {
+  return await bcrypt.compare(originalPassword, hashedPassword);
+};
+
+export const User = model<TUser, UserModel>('User', userSchema);
