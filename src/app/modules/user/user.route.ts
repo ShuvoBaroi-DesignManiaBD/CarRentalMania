@@ -4,10 +4,6 @@ import validateRequest from '../../middlewares/validateRequest';
 import { UserValidation } from './user.validation';
 const router = Router();
 
-router.post(
-  '/create-user',
-  validateRequest(UserValidation.newUserValidation),
-  UserControllers.createUser,
-);
+
 
 export const UserRoutes = router;
