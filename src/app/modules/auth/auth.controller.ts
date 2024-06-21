@@ -5,6 +5,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import { authServices } from './auth.service';
+import config from '../../config';
 
 const signUp = catchAsync(async (req: Request, res: Response) => {
   const result = await authServices.signUp(req.body);
@@ -22,13 +23,25 @@ const signUp = catchAsync(async (req: Request, res: Response) => {
 const signIn = catchAsync(async (req, res) => {
   const result = await authServices.signIn(req.body);
   // eslint-disable-next-line no-unsafe-optional-chaining
-  const {password, ...resultExcludingpassword} = result;
+  const {password, ...resultExcludingpassword} = result.user;
+  const { refreshToken, accessToken } = result;
+
+  res.cookie('refreshToken', refreshToken, {
+    secure: config.node_env === 'production',
+    httpOnly: true,
+  });
+
+  res.cookie('accessToken', accessToken, {
+    secure: config.node_env === 'production',
+    httpOnly: true,
+  });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User is logged in succesfully!',
     data: resultExcludingpassword,
+    token: accessToken,
   });
 });
 

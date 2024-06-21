@@ -3,6 +3,8 @@ import AppError from "../../errors/AppError";
 import { TUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import { TSignInUser } from "./auth.interface";
+import { createToken } from "./auth.utils";
+import config from "../../config";
 
 
 const signUp = async(payload: TUser)=>{
@@ -22,10 +24,32 @@ const signIn = async (payload: TSignInUser) => {
     if (!(await User.isPasswordMatched(payload?.password, user?.password)))
       throw new AppError(httpStatus.FORBIDDEN, 'Password do not matched');
 
-    return user?._doc;
+
+    const jwtPayload = {
+      email: user.email,
+      role: user.role,
+    };
+
+    const accessToken = createToken(
+      jwtPayload,
+      config.jwt_access_key as string,
+      config.jwt_access_expires_in as string,
+    );
+  
+    const refreshToken = createToken(
+      jwtPayload,
+      config.jwt_refresh_key as string,
+      config.jwt_refresh_expires_in as string,
+    );
+
+    return {
+      user: user?._doc,
+      accessToken,
+      refreshToken,
+    };
   };
 
 export const authServices = {
     signUp,
-    signIn
+    signIn,
 } 
