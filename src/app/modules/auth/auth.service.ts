@@ -5,11 +5,23 @@ import { User } from "../user/user.model";
 import { TSignInUser } from "./auth.interface";
 import { createToken } from "./auth.utils";
 import config from "../../config";
+import mongoose from "mongoose";
 
 
 const signUp = async(payload: TUser)=>{
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
     const result = await User.create(payload);
+    await session.commitTransaction();
+    await session.endSession();
     return result?._doc;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new Error(error);
+  }
 }
 
 const signIn = async (payload: TSignInUser) => {
