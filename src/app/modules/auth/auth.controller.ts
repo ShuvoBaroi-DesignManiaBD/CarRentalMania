@@ -35,6 +35,7 @@ const signIn = catchAsync(async (req, res) => {
     secure: config.node_env === 'production',
     httpOnly: true,
   });
+  res.header('authorization', accessToken);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
