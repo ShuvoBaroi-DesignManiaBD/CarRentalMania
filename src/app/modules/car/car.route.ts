@@ -13,4 +13,9 @@ router.post(
   carControllers.createCar,
 );
 
+router.get(
+  '',
+  carControllers.getAllCars,
+);
+
 export const carRoutes = router;
