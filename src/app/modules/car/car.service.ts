@@ -14,11 +14,11 @@ const getAllCars = async () => {
   return result;
 };
 
-const getACar = async(id:string) => {
+const getACar = async (id: string) => {
   const car = await Car.findById(id);
 
-  if(!car) {
-    throw new AppError(httpStatus.NOT_FOUND, "Car not found");
+  if (!car) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Car not found');
   }
 
   return car;
@@ -27,11 +27,11 @@ const getACar = async(id:string) => {
 const updateACar = async (id: string, payload: Partial<TCar>) => {
   const car = await Car.findById(id);
 
-  if(!car) {
-    throw new AppError(httpStatus.NOT_FOUND, "Car not found");
+  if (!car) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Car not found');
   }
 
-  if(payload && car){
+  if (payload && car) {
     for (const [key, value] of Object.entries(payload)) {
       car[key] = value;
     }
@@ -42,11 +42,24 @@ const updateACar = async (id: string, payload: Partial<TCar>) => {
     runValidators: true,
   });
   return result;
-}
+};
+
+const deleteACar = async (id: string) => {
+  const deletedCar = await Car.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true },
+  );
+  if (!deletedCar) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete car');
+  }
+  return deletedCar;
+};
 
 export const carServices = {
   createACar,
   getAllCars,
   getACar,
-  updateACar
+  updateACar,
+  deleteACar,
 };

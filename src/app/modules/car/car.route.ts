@@ -29,4 +29,10 @@ router.patch(
   carControllers.updateACar,
 );
 
+router.delete(
+  '/:id',
+  auth('admin'),
+  carControllers.deleteACar,
+);
+
 export const carRoutes = router;
