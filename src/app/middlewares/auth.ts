@@ -14,7 +14,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
 
     // checking if the token is missing
     if (!token) {
-      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
+      throw new AppError(httpStatus.UNAUTHORIZED, 'Please login to your account!');
     }
 
     // checking if the given token is valid
@@ -29,7 +29,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
     const user = await User.isUserExistsByEmail(email);
 
     if (!user) {
-      throw new AppError(httpStatus.NOT_FOUND, 'Sorry! You are not valid user.');
+      throw new AppError(httpStatus.NOT_FOUND, 'Sorry! You are not a valid user.');
     }
 
     if (requiredRoles && !requiredRoles.includes(role)) {

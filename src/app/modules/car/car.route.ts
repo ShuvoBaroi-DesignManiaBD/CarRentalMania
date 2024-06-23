@@ -18,4 +18,15 @@ router.get(
   carControllers.getAllCars,
 );
 
+router.get(
+  '/:id',
+  carControllers.getACar,
+);
+
+router.patch(
+  '/:id',
+  auth('admin'),
+  carControllers.updateACar,
+);
+
 export const carRoutes = router;
