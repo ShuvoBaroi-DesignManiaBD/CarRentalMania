@@ -10,11 +10,11 @@ import { User } from "../modules/user/user.model";
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization || req.cookies.accessToken;
-
+    const token = req?.headers?.authorization?.split(" ")[1]
+    
     // checking if the token is missing
     if (!token) {
-      throw new AppError(httpStatus.UNAUTHORIZED, 'Please login to your account!');
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized for this route!');
     }
 
     // checking if the given token is valid
