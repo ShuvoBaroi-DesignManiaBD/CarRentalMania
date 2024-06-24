@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
 import { TCar } from './car.interface';
 import { Car } from './car.model';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
+import QueryBuilder from '../../builder/QueryBuilder';
 
 const createACar = async (payload: TCar) => {
   const result = await Car.create(payload);
@@ -10,7 +10,8 @@ const createACar = async (payload: TCar) => {
 };
 
 const getAllCars = async () => {
-  const result = await Car.find();
+  const carsQuery = new QueryBuilder(Car.find(), {})
+  const result = await carsQuery.modelQuery;
   return result;
 };
 
