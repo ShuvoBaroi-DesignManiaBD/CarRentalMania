@@ -26,24 +26,40 @@ const getACar = async (id: string) => {
 };
 
 const updateACar = async (id: string, payload: Partial<TCar>) => {
-  const car = await Car.findById(id);
-
+  // Finding the car by ID
+  const car = await Car.findById(id)
+  
   if (!car) {
     throw new AppError(httpStatus.NOT_FOUND, 'Car not found');
   }
 
-  if (payload && car) {
-    for (const [key, value] of Object.entries(payload)) {
-      car[key] = value;
+  // Define valid fields
+  const validFields = [
+    'name', 'description', 'color', 'isElectric', 'status', 'features', 'pricePerHour', 'isDeleted'
+  ];
+
+  // Check for invalid fields in the payload
+  for (const key of Object.keys(payload)) {
+    if (!validFields.includes(key)) {
+      throw new AppError(httpStatus.BAD_REQUEST, `Invalid field: ${key}`);
     }
   }
 
-  const result = await Car.findByIdAndUpdate(id, car, {
+  // Perform the update
+  const result = await Car.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
   });
+
+  if (!result) {
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to update the car!');
+  }
+
   return result;
 };
+
+
+
 
 const deleteACar = async (id: string) => {
   const deletedCar = await Car.findByIdAndUpdate(

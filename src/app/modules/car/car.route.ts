@@ -26,6 +26,7 @@ router.get(
 router.patch(
   '/:id',
   auth('admin'),
+  validateRequest(CarValidation.carUpdateValidationSchema),
   carControllers.updateACar,
 );
 

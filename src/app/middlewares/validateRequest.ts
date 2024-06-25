@@ -7,6 +7,12 @@ const validateRequest = (schema: AnyZodObject) => {
     await schema.parseAsync({
       body: req.body,
       cookies: req.cookies,
+    }).catch((err) => {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: err.errors,
+      });
     });
 
     next();
