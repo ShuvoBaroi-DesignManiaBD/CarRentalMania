@@ -28,7 +28,6 @@ const signUp = async(payload: TUser)=>{
 const signIn = async (payload: TSignInUser) => {
     // checking if the user is exists or not
     const user = await User.isUserExistsByEmail(payload.email);
-    console.log(user);
     
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');

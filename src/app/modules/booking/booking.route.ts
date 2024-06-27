@@ -8,9 +8,15 @@ const router = Router();
 
 router.post(
   '',
-  auth('user', 'admin'),
+  auth('user'),
   validateRequest(bookingValidation.initialBookingValidationSchema),
   bookingControllers.createABooing,
+);
+
+router.get(
+  '/my-bookings',
+  auth('user'),
+  bookingControllers.myBookings,
 );
 
 export const bookingRoutes = router;

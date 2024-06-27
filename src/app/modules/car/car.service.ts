@@ -5,6 +5,11 @@ import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
 
 const createACar = async (payload: TCar) => {
+  const isCarExist = await Car.find({name:payload?.name});
+  
+  if (isCarExist.length !== 0) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'A car with this name already exist!')
+  }
   const result = await Car.create(payload);
   return result;
 };

@@ -5,6 +5,8 @@ import { TBookingInitial } from './booking.interface';
 import Booking from './booking.model';
 import { Car } from '../car/car.model';
 import { JwtPayload } from 'jsonwebtoken';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { TSignInUser } from '../auth/auth.interface';
 
 const createABooking = async (payload: TBookingInitial, user:JwtPayload) => {
   const carId = payload?.carId?.toString();
@@ -15,7 +17,7 @@ const createABooking = async (payload: TBookingInitial, user:JwtPayload) => {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
   }
 
-  const car = await Car.findById(carId);
+  const car = await Car.findByIdAndUpdate(carId, {status: "unavailable"});
   if (!car) {
     throw new AppError(httpStatus.NOT_FOUND, 'Car not found!');
   }
@@ -33,6 +35,13 @@ const createABooking = async (payload: TBookingInitial, user:JwtPayload) => {
   return searchBooking;
 };
 
+const myBookings = async (user:JwtPayload) => {
+  const carsQuery = new QueryBuilder(Booking.find({user:user?.id}).populate("user").populate("car"), {})
+  const result = await carsQuery.modelQuery;
+  return result;
+};
+
 export const bookingServices = {
   createABooking,
+  myBookings
 };
