@@ -6,6 +6,7 @@ import httpStatus from "http-status";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../config";
 import { User } from "../modules/user/user.model";
+import { verifyToken } from "../modules/auth/auth.utils";
 
 
 const auth = (...requiredRoles: TUserRole[]) => {
@@ -18,12 +19,14 @@ const auth = (...requiredRoles: TUserRole[]) => {
     }
 
     // checking if the given token is valid
-    const decoded = jwt.verify(
-      token,
-      config.jwt_access_key as string,
-    ) as JwtPayload;
+    // const decoded = jwt.verify(
+    //   token,
+    //   config.jwt_access_key as string,
+    // ) as JwtPayload;
+    const decoded = verifyToken(token, config.jwt_access_key as string)
 
-    const { role, email} = decoded;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+    const { id, role, email} = decoded;
 
     // checking if the user is exist
     const user = await User.isUserExistsByEmail(email);

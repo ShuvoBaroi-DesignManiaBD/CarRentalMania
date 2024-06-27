@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { TUser } from "../user/user.interface";
@@ -15,7 +16,7 @@ const signUp = async(payload: TUser)=>{
     const result = await User.create(payload);
     await session.commitTransaction();
     await session.endSession();
-    return result?._doc;
+    return (result as any)?._doc;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     await session.abortTransaction();
@@ -27,7 +28,8 @@ const signUp = async(payload: TUser)=>{
 const signIn = async (payload: TSignInUser) => {
     // checking if the user is exists or not
     const user = await User.isUserExistsByEmail(payload.email);
-  
+    console.log(user);
+    
     if (!user) {
       throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
     }
@@ -38,6 +40,7 @@ const signIn = async (payload: TSignInUser) => {
 
 
     const jwtPayload = {
+      id: (user as any)._id,
       email: user.email,
       role: user.role,
     };
@@ -55,7 +58,7 @@ const signIn = async (payload: TSignInUser) => {
     );
 
     return {
-      user: user?._doc,
+      user: (user as any)._doc,
       accessToken,
       refreshToken,
     };
