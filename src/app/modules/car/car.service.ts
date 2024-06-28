@@ -3,19 +3,24 @@ import { Car } from './car.model';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
+import Booking from '../booking/booking.model';
+import convertTimeToHours from './car.utils';
 
 const createACar = async (payload: TCar) => {
-  const isCarExist = await Car.find({name:payload?.name});
-  
+  const isCarExist = await Car.find({ name: payload?.name });
+
   if (isCarExist.length !== 0) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'A car with this name already exist!')
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'A car with this name already exist!',
+    );
   }
   const result = await Car.create(payload);
   return result;
 };
 
 const getAllCars = async () => {
-  const carsQuery = new QueryBuilder(Car.find(), {})
+  const carsQuery = new QueryBuilder(Car.find(), {});
   const result = await carsQuery.modelQuery;
   return result;
 };
@@ -32,15 +37,22 @@ const getACar = async (id: string) => {
 
 const updateACar = async (id: string, payload: Partial<TCar>) => {
   // Finding the car by ID
-  const car = await Car.findById(id)
-  
+  const car = await Car.findById(id);
+
   if (!car) {
     throw new AppError(httpStatus.NOT_FOUND, 'Car not found');
   }
 
   // Define valid fields
   const validFields = [
-    'name', 'description', 'color', 'isElectric', 'status', 'features', 'pricePerHour', 'isDeleted'
+    'name',
+    'description',
+    'color',
+    'isElectric',
+    'status',
+    'features',
+    'pricePerHour',
+    'isDeleted',
   ];
 
   // Check for invalid fields in the payload
@@ -57,14 +69,14 @@ const updateACar = async (id: string, payload: Partial<TCar>) => {
   });
 
   if (!result) {
-    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to update the car!');
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed to update the car!',
+    );
   }
 
   return result;
 };
-
-
-
 
 const deleteACar = async (id: string) => {
   const deletedCar = await Car.findByIdAndUpdate(
@@ -78,10 +90,41 @@ const deleteACar = async (id: string) => {
   return deletedCar;
 };
 
+const returnACar = async (bookingId: string, endTime: string) => {
+  const booking = await Booking.findById(bookingId);
+  const car = await Car.findById(booking?.car);
+  
+  if (!booking) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!');
+  }
+
+  await Car.findByIdAndUpdate(booking?.car?._id, {
+    status: 'available',
+  }, {new: true, runValidators:true});
+
+  const timeSpent = convertTimeToHours([booking?.startTime, endTime]);
+
+  const totalCost = Math.round(timeSpent * (car?.pricePerHour as number))
+  console.log(timeSpent);
+  
+ 
+  const updatedBooking = await Booking.findByIdAndUpdate(
+    bookingId,
+    {
+      endTime: endTime,
+      totalCost: totalCost
+    },
+    { new: true },
+  );
+
+  return updatedBooking;
+};
+
 export const carServices = {
   createACar,
   getAllCars,
   getACar,
   updateACar,
   deleteACar,
+  returnACar,
 };

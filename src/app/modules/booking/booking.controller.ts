@@ -41,5 +41,5 @@ const searchMyBookings = catchAsync(async (req: Request, res: Response) => {
 export const bookingControllers = {
   createABooing,
   myBookings,
-  searchMyBookings
+  searchMyBookings,
 };

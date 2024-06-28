@@ -13,6 +13,13 @@ router.post(
   carControllers.createCar,
 );
 
+router.post(
+  '/return',
+  auth('admin'),
+  validateRequest(CarValidation.returnCar),
+  carControllers.returnACar,
+);
+
 router.get(
   '',
   carControllers.getAllCars,
