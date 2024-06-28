@@ -26,8 +26,20 @@ const myBookings = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const searchMyBookings = catchAsync(async (req: Request, res: Response) => {
+  const result = await bookingServices.bookingsWithQueries(req?.query);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Bookings retrieved successfully',
+    data: result,
+  });
+});
+
 
 export const bookingControllers = {
   createABooing,
-  myBookings
+  myBookings,
+  searchMyBookings
 };

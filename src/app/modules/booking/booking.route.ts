@@ -19,4 +19,10 @@ router.get(
   bookingControllers.myBookings,
 );
 
+router.get(
+  '',
+  auth('admin'),
+  bookingControllers.searchMyBookings,
+);
+
 export const bookingRoutes = router;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { User } from '../user/user.model';
@@ -6,7 +7,6 @@ import Booking from './booking.model';
 import { Car } from '../car/car.model';
 import { JwtPayload } from 'jsonwebtoken';
 import QueryBuilder from '../../builder/QueryBuilder';
-import { TSignInUser } from '../auth/auth.interface';
 
 const createABooking = async (payload: TBookingInitial, user:JwtPayload) => {
   const carId = payload?.carId?.toString();
@@ -41,7 +41,19 @@ const myBookings = async (user:JwtPayload) => {
   return result;
 };
 
+const bookingsWithQueries = async (queries:any) => {
+  let carsQuery = null;
+  if(queries.length > 0) {
+    carsQuery = new QueryBuilder(Booking.find({car:queries.carId || null, date:queries.date||null}).populate("user").populate("car"), {})
+  } else {
+    carsQuery = new QueryBuilder(Booking.find().populate("user").populate("car"), {})
+  }
+  const result = await carsQuery.modelQuery;
+  return result;
+};
+
 export const bookingServices = {
   createABooking,
-  myBookings
+  myBookings,
+  bookingsWithQueries
 };
