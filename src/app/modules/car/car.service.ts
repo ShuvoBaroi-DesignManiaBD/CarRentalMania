@@ -105,7 +105,6 @@ const returnACar = async (bookingId: string, endTime: string) => {
   const timeSpent = convertTimeToHours([booking?.startTime, endTime]);
 
   const totalCost = Math.round(timeSpent * (car?.pricePerHour as number))
-  console.log(timeSpent);
   
  
   const updatedBooking = await Booking.findByIdAndUpdate(

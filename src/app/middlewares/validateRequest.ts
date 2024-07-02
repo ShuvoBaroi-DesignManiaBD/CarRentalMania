@@ -4,20 +4,14 @@ import { AnyZodObject } from 'zod';
 import catchAsync from '../utils/catchAsync';
 
 const validateRequest = (schema: AnyZodObject) => {
+  // Wrapped by catchAsync utility function to handle the async operations
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    try {
+      // trying to parse the input data from the body/cookie by Schema
       await schema.parseAsync({
         body: req.body,
         cookies: req.cookies,
       });
-      next(); // Proceed to the next middleware if validation succeeds
-    } catch (err:any) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        errors: err.errors,
-      });
-    }
+      next();
   });
 };
 
