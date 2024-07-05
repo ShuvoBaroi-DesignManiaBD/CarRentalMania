@@ -5,6 +5,7 @@ import httpStatus from 'http-status';
 import QueryBuilder from '../../builder/QueryBuilder';
 import Booking from '../booking/booking.model';
 import convertTimeToHours from './car.utils';
+import DataNotFoundError from '../../errors/DataNotFoundError';
 
 const createACar = async (payload: TCar) => {
   const isCarExist = await Car.find({ name: payload?.name });
@@ -20,7 +21,7 @@ const createACar = async (payload: TCar) => {
 };
 
 const getAllCars = async () => {
-  const carsQuery = new QueryBuilder(Car.find(), {});
+  const carsQuery = new QueryBuilder(Car.find({isDeleted: false}), {});
   const result = await carsQuery.modelQuery;
   return result;
 };
@@ -28,8 +29,8 @@ const getAllCars = async () => {
 const getACar = async (id: string) => {
   const car = await Car.findById(id);
 
-  if (!car) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Car not found');
+  if (!car || car.isDeleted) {
+    throw new DataNotFoundError()
   }
 
   return car;
@@ -40,7 +41,7 @@ const updateACar = async (id: string, payload: Partial<TCar>) => {
   const car = await Car.findById(id);
 
   if (!car) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Car not found');
+    throw new DataNotFoundError()
   }
 
   // Define valid fields
@@ -95,7 +96,7 @@ const returnACar = async (bookingId: string, endTime: string) => {
   const car = await Car.findById(booking?.car);
   
   if (!booking) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found!');
+    throw new DataNotFoundError()
   }
 
   await Car.findByIdAndUpdate(booking?.car?._id, {

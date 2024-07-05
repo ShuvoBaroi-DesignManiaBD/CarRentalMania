@@ -9,6 +9,7 @@ import handleCastError from '../errors/handleCastError';
 import handleZodError from '../errors/handleZodError';
 import handleDuplicateError from '../errors/handleDuplicateError';
 import handleValidationError from '../errors/handleValidationError';
+import DataNotFoundError from '../errors/DataNotFoundError';
 
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
@@ -28,6 +29,10 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
+  } else if (err instanceof DataNotFoundError) {
+    const simplifiedError = new DataNotFoundError();
+    statusCode = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
   } else if (err?.name === 'ValidationError') {
     const simplifiedError = handleValidationError(err);
     statusCode = simplifiedError?.statusCode;
@@ -62,7 +67,14 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     ];
   } 
 
-  
+  if(err instanceof DataNotFoundError) {
+    return res.status(statusCode).json({
+      success: false,
+      statusCode,
+      message,
+      data: []
+    });
+  }
   return res.status(statusCode).json({
     success: false,
     message,
