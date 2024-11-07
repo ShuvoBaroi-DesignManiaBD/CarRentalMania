@@ -1,6 +1,6 @@
 
 ---
-## [Car Rental Mania Backend](https://rental-mania-backend.shuvobaroi.com/)
+## [Car Rental Mania Backend](https://car-rental-mania-backend.vercel.app/)
 
 Car Rental Mania Backend is a backend application built with Express, TypeScript, and Mongoose. This project follows an industry-standard modular pattern for managing routes and functionalities.
 
@@ -212,7 +212,7 @@ car-rental-mania-backend/
 
 ---
 
-Live link: [https://rental-mania-backend.shuvobaroi.com/](https://rental-mania-backend.shuvobaroi.com/)
+Live link: [https://car-rental-mania-backend.vercel.app/](https://car-rental-mania-backend.vercel.app/)
 
 GitHub Repo: [https://github.com/ShuvoBaroi-DesignManiaBD/CarRentalMania](https://github.com/ShuvoBaroi-DesignManiaBD/CarRentalMania)
 ```
