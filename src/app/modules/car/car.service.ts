@@ -6,6 +6,7 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import Booking from '../booking/booking.model';
 import convertTimeToHours from './car.utils';
 import DataNotFoundError from '../../errors/DataNotFoundError';
+import { CarSearchableFields } from './car.constant';
 
 const createACar = async (payload: TCar) => {
   const isCarExist = await Car.find({ name: payload?.name });
@@ -20,10 +21,28 @@ const createACar = async (payload: TCar) => {
   return result;
 };
 
-const getAllCars = async () => {
-  const carsQuery = new QueryBuilder(Car.find({isDeleted: false}), {});
-  const result = await carsQuery.modelQuery;
-  return result;
+const getAllCars = async (query: Record<string, unknown>) => {
+  const baseQuery = new QueryBuilder(Car.find({ isDeleted: false }), query)
+    .search(CarSearchableFields)
+    .filter()
+    .sort()
+    .fields();
+
+    console.log(baseQuery.modelQuery);
+    
+  // Clone the query for counting documents
+  const countQuery = baseQuery.modelQuery.clone();
+
+  // Count the total number of documents matching the criteria
+  const totalMatchingDocuments = await countQuery.countDocuments().exec();
+
+  // Apply pagination to the original query
+  baseQuery.paginate();
+
+  // Get the final result with pagination
+  const result = await baseQuery.modelQuery.exec();
+
+  return result && { result, totalCars: totalMatchingDocuments };
 };
 
 const getACar = async (id: string) => {

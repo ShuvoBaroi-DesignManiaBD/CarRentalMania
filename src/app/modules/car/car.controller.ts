@@ -3,6 +3,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { Request, Response } from 'express';
 import { carServices } from './car.service';
+import { TCar } from './car.interface';
 
 const createCar = catchAsync(async (req: Request, res: Response) => {
   const result = await carServices.createACar(req.body);
@@ -16,12 +17,14 @@ const createCar = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllCars = catchAsync(async (req: Request, res: Response) => {
-  const result = await carServices.getAllCars();
-
+  console.log(req?.query);
+  const {result, totalCars} = await carServices.getAllCars(req.query);
+  
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: "Cars retrieved successfully",
+    message: "Products retrieved successfully",
+    totalCars: totalCars,
     data: result,
   });
 });

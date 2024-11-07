@@ -8,7 +8,9 @@ export interface TUser {
   role: 'user' | 'admin';
   password: string;
   phone: string;
-  address: string;
+  address?: string;
+  isBlocked: boolean;
+  isDeleted: boolean;
 }
 
 export interface UserModel extends Model<TUser> {

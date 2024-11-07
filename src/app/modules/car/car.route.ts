@@ -7,7 +7,7 @@ import auth from '../../middlewares/auth';
 const router = Router();
 
 router.post(
-  '',
+  '/create-car',
   auth('admin'),
   validateRequest(CarValidation.carValidationSchema),
   carControllers.createCar,
@@ -21,7 +21,7 @@ router.post(
 );
 
 router.get(
-  '',
+  '/all-cars',
   carControllers.getAllCars,
 );
 

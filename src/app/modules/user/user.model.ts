@@ -31,6 +31,13 @@ const userSchema = new Schema<TUser, UserModel>(
     },
     address: {
       type: String,
+    },
+    isBlocked: {
+      type: Boolean,
+      required: true,
+    },
+    isDeleted: {
+      type: Boolean,
       required: true,
     },
   },
